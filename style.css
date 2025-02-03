@@ -1,0 +1,78 @@
+body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+.number-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.number-cell {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+    cursor: pointer;
+}
+
+.yellow-bg {
+    background-color: yellow;
+}
+
+.green-bg {
+    background-color: lightgreen;
+}
+
+.red-bg {
+    background-color: red !important;
+    color: white !important;
+    font-weight: bold;
+    text-align: center;
+}
+
+.purple-bg {
+    background-color: purple;
+    color: white;
+}
+
+.car-icon {
+    margin-left: 5px;
+}
+
+button {
+    margin: 5px;
+    padding: 10px;
+}
+
+.navigation-buttons {
+    margin-top: 20px;
+}
+
+.grid-9 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+    max-width: 300px;
+}
+
+.grid-cell {
+    border: 1px solid #ccc;
+    padding: 10px;
+    min-height: 50px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+}
