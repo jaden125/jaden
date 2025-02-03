@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>馬匹九宮格設定</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="page1" class="page active">
+        <h2>第1頁：請輸入場次數量</h2>
+        <input type="number" id="raceCount" min="1" max="10">
+        <div class="navigation-buttons">
+            <button onclick="goToPage(4)">上一頁</button>
+            <button onclick="goToPage2()">下一頁</button>
+        </div>
+    </div>
+
+    <div id="page2" class="page">
+        <h2>第2頁：請輸入每場馬匹數量</h2>
+        <div id="horseInputs"></div>
+        <div class="navigation-buttons">
+            <button onclick="goToPage(1)">上一頁</button>
+            <button onclick="goToPage3()">下一頁</button>
+        </div>
+    </div>
+
+    <div id="page3" class="page">
+        <h2>第3頁：設定馬匹要求</h2>
+        <div id="raceSettings"></div>
+        <div>
+            <button onclick="setYellow()">雙格</button>
+            <button onclick="setGreen()">西岸</button>
+            <button onclick="addCar()">細車🚗</button>
+        </div>
+        <div class="navigation-buttons">
+            <button onclick="goToPage(2)">上一頁</button>
+            <button onclick="goToPage4()">下一頁</button>
+        </div>
+    </div>
+
+    <div id="page4" class="page">
+        <h2>第4頁：確認設定</h2>
+        <div>
+            <button onclick="addGrid9()">新增九宮格</button>
+            <button onclick="addExtraCell()">新增格子</button>
+            <button onclick="setUrineTest()">驗尿模式：關閉</button>
+        </div>
+        <div id="gridsContainer"></div>
+        <div id="extraCellsContainer"></div>
+        <div id="confirmationSettings"></div>
+
+        <div id="userInstructions">
+            <h3>📌 用戶說明</h3>
+            <ul>
+                <li>🔹 點擊 2 次 → 背景變紅，該格子鎖定，無法放入數字。</li>
+                <li>🔹 點擊 3 次 → 恢復原狀，允許放入數字。</li>
+                <li>🔊 播放語音：手動播放最近的場次資訊</li>
+            </ul>
+        </div>
+        
+        <div id="speechRateControl">
+            <label for="speechRate">語音速度：</label>
+            <input type="range" id="speechRate" min="0.5" max="2" step="0.1" value="1">
+            <span id="rateValue">1x</span>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
