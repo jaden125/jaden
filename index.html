@@ -1,19 +1,348 @@
-<!DOCTYPE html>
-<html lang="zh-HK">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>馬匹九宮格設定</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .number-cell {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .yellow-bg {
+            background-color: yellow;
+        }
+        
+        .green-bg {
+            background-color: lightgreen;
+        }
+        
+        .red-bg {
+            background-color: red !important;
+            color: white !important;
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        .purple-bg {
+            background-color: purple;
+            color: white;
+        }
+        
+        .car-icon {
+            margin-left: 5px;
+        }
+        
+        button {
+            margin: 5px;
+            padding: 10px;
+        }
+
+        .navigation-buttons {
+            margin-top: 20px;
+        }
+
+        .grid-9 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+            max-width: 300px;
+        }
+
+        .grid-cell {
+            border: 1px solid #ccc;
+            padding: 10px;
+            min-height: 50px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .delete-btn, .noting-btn {
+            background: red;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover, .noting-btn:hover {
+            background: darkred;
+        }
+
+        .voice-mode-button, #voicePlayButton {
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
+        }
+
+        .voice-mode-button:hover, #voicePlayButton:hover {
+            background-color: #e0e0e0;
+        }
+
+        .selected-button {
+            background-color: #ffcc00; /* 黃色背景 */
+            color: black;
+            font-weight: bold;
+        }
+        
+        .grid-controls {
+            display: flex;
+            justify-content: left;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        
+        .race-info {
+            margin-top: 5px;
+            font-size: 14px;
+            color: gray;
+        }
+        
+        .grid-summary {
+            margin-top: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            color: gray;
+        }
+        
+        /* Updated user instructions style */
+        #userInstructions {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 15px;
+            border-top: 2px solid #ccc;
+        }
+        
+        #userInstructions ul {
+            padding-left: 20px;
+        }
+
+        /* Additional style for red warning text */
+        #userInstructions ul[style*="color: red;"] {
+            color: red;
+        }
+        
+        /* Added styles for grid summary */
+        
+        /* 新增雙格佔用的樣式 */
+        .occupied-double {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
+        }
+
+        /* 確保刪除按鈕與九宮格、額外格子分開 */
+        .grid-container, .extra-cell {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .grid-9, .extra-cell .grid-cell {
+            min-height: 50px;
+            border: 1px solid #ccc;
+        }
+
+        /* New styles for thank you section */
+        #thankYouSection {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        #thankYouSection h2 {
+            color: #f1c40f;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        #thankYouSection p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .highlight-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .highlight-box h3 {
+            color: #f39c12;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .highlight-box ul {
+            text-align: left;
+            padding-left: 20px;
+        }
+
+        .highlight-box ul li {
+            list-style: none;
+            font-size: 16px;
+            padding: 5px 0;
+        }
+
+        .highlight-box ul li::before {
+            content: "⭐";
+            margin-right: 5px;
+            color: #f1c40f;
+        }
+
+        .intro {
+            font-style: italic;
+            color: #ecf0f1;
+        }
+
+        /* New styles for voice play button */
+        #voicePlayButton {
+            margin: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #voicePlayButton:hover {
+            background-color: #e0e0e0;
+        }
+        
+        /* Add new style for selected voice mode button */
+        .voice-mode-button {
+            margin: 5px;
+            padding: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        /* New styles for speech rate control */
+        #speechRateControl {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #speechRateControl label {
+            margin-right: 10px;
+        }
+
+        #speechRate {
+            flex-grow: 1;
+            margin: 0 10px;
+        }
+
+        #rateValue {
+            font-weight: bold;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        /* Add subtle styles for voice control buttons */
+        #voicePlayButton, #voiceStopButton {
+            font-size: 18px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        #voicePlayButton:hover, #voiceStopButton:hover {
+            transform: scale(1.2);
+        }
+    </style>
 </head>
 <body>
-
     <div id="page1" class="page active">
         <h2>第1頁：請輸入場次數量</h2>
         <input type="number" id="raceCount" min="1" max="10">
         <div class="navigation-buttons">
             <button onclick="goToPage(4)">上一頁</button>
             <button onclick="goToPage2()">下一頁</button>
+        </div>
+
+        <!-- Updated Thank You Section with New Design -->
+        <div id="thankYouSection">
+            <h2>🚀 Jaden締造新時代，助力團隊邁向高峰</h2>
+            <p class="intro">
+                在這個講求效率與準確性的時代，資訊管理與工作流程的順暢，對於團隊而言至關重要。然而，回首過去，我們的工作方式卻一直依賴最傳統的記錄方式——一張紙、一支筆，將重要的數據與資訊簡單記錄下來。
+            </p>
+            <p>
+                時間一久，筆跡潦草難以辨識，紙張遺失成為家常便飯，數據統計困難重重，錯漏百出，影響了工作的流暢度，讓團隊在日復一日的混亂中苦苦掙扎。
+            </p>
+
+            <div class="highlight-box">
+                <h3>🔹 一場改變的開始</h3>
+                <p>
+                    當大家還在習慣於這種模式，甚至認為「這就是日常」時，Jaden站了出來。他沒有抱怨，也沒有選擇接受，而是用行動改變現狀。他深知，單靠紙張記錄已經無法應對現代化工作的需求，於是，他憑藉堅定的決心和無比的耐心，為團隊打造了一個全新的網站，讓資訊能夠井然有序地被記錄、整理、查找與共享。
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h3>🌟 這個網站帶來的革新</h3>
+                <ul>
+                    <li>🔹 <strong>快速查找：</strong> 只需點擊幾下，即可輕鬆獲取準確資訊</li>
+                    <li>🔹 <strong>避免錯誤：</strong> 數據不再遺失與錯漏，提高精確性</li>
+                    <li>🔹 <strong>高效管理：</strong> 取代混亂的記錄方式，讓資訊井然有序</li>
+                </ul>
+            </div>
+
+            <p>
+                這一切並非輕而易舉的事。Jaden在開發這個網站的過程中，不斷調整與改進，反覆測試與優化，確保它能夠真正符合大家的需求。他耐心聆聽同事們的意見，細心打磨每一個功能，讓網站不僅實用，而且操作簡單，讓所有人都能輕鬆上手。
+            </p>
+
+            <div class="highlight-box">
+                <h3>🎉 感謝 Jaden 的付出！</h3>
+                <p>
+                    在此，我們向Jaden獻上最誠摯的感謝，感謝他的無私付出，感謝他帶來的這份改變，感謝他讓我們的工作變得更加順暢與高效。
+                </p>
+                <p>
+                    <strong>願他的未來更加輝煌，也願我們的團隊在這個全新的起點上，攜手邁向更高的成就！🚀🔥</strong>
+                </p>
+            </div>
         </div>
     </div>
 
@@ -51,22 +380,563 @@
         <div id="extraCellsContainer"></div>
         <div id="confirmationSettings"></div>
 
+        <!-- 用戶說明區塊 -->
         <div id="userInstructions">
             <h3>📌 用戶說明</h3>
+            
+            <p><strong>🔹 點擊九宮格內的格子：</strong></p>
             <ul>
-                <li>🔹 點擊 2 次 → 背景變紅，該格子鎖定，無法放入數字。</li>
-                <li>🔹 點擊 3 次 → 恢復原狀，允許放入數字。</li>
+                <li><strong>點擊 2 次</strong> → 背景變紅色，該格子鎖定，無法放入數字。</li>
+                <li><strong>點擊 3 次</strong> → 恢復原狀，允許放入數字。</li>
+            </ul>
+
+            <p><strong>🔹 語音操作：</strong></p>
+            <ul>
+                <li>🔊 語音開關：控制是否自動播放語音</li>
                 <li>🔊 播放語音：手動播放最近的場次資訊</li>
+            </ul>
+
+            <p><strong>🔹 限制事項：</strong></p>
+            <ul style="color: red;">
+                <li>❌ 此頁面無法返回上一頁或首頁。</li>
+                <li>❌ 若需重新設定，請刷新（重新整理/F5）返回頁面。</li>
             </ul>
         </div>
         
         <div id="speechRateControl">
             <label for="speechRate">語音速度：</label>
-            <input type="range" id="speechRate" min="0.5" max="2" step="0.1" value="1">
+            <input type="range" id="speechRate" min="0.5" max="2" step="0.1" value="1" oninput="updateSpeechRate(this.value)">
             <span id="rateValue">1x</span>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        let currentMode = '';
+        let races = [];
+        let gridCounter = 0;
+        let cellCounter = 0;
+        let urineTestActive = false;
+        let latestRaceInfo = "";
+        let voiceMode = ""; 
+        let isVoiceEnabled = true;
+        let speechRate = 1; //默認速度
+        let notingMode = false;
+        let speechSynthesisUtterance = null;
+
+        function goToPage(pageNumber) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(`page${pageNumber}`).classList.add('active');
+        }
+
+        function goToPage2() {
+            const count = parseInt(document.getElementById('raceCount').value);
+            if (count > 0 && count <= 10) {
+                goToPage(2);
+                
+                const container = document.getElementById('horseInputs');
+                container.innerHTML = '';
+                for (let i = 0; i < count; i++) {
+                    container.innerHTML += `
+                        <div>
+                            <label>第${i + 1}場馬匹數量：</label>
+                            <input type="number" id="race${i}" min="1" max="14">
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        function goToPage3() {
+            const inputs = document.querySelectorAll('#horseInputs input');
+            races = [];
+            let valid = true;
+            
+            inputs.forEach((input, index) => {
+                const count = parseInt(input.value);
+                if (count > 0 && count <= 14) {
+                    races.push(count);
+                } else {
+                    valid = false;
+                }
+            });
+
+            if (valid) {
+                goToPage(3);
+                createRaceGrid();
+            }
+        }
+
+        function createRaceGrid() {
+            const container = document.getElementById('raceSettings');
+            container.innerHTML = '';
+            
+            races.forEach((horseCount, raceIndex) => {
+                const grid = document.createElement('div');
+                grid.innerHTML = `<h3>第${raceIndex + 1}場</h3>`;
+                const numberGrid = document.createElement('div');
+                numberGrid.className = 'number-grid';
+                
+                for (let i = 1; i <= horseCount; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'number-cell';
+                    cell.dataset.race = raceIndex;
+                    cell.dataset.number = i;
+                    cell.textContent = i;
+                    cell.onclick = () => handleCellClick(cell);
+                    
+                    numberGrid.appendChild(cell);
+                }
+                
+                grid.appendChild(numberGrid);
+                container.appendChild(grid);
+            });
+        }
+
+        function handleCellClick(cell) {
+            if (!cell) return;
+
+            if (urineTestActive) {
+                if (cell.classList.contains('purple-bg')) {
+                    const prevBg = cell.getAttribute('data-prev-bg') || "";
+                    cell.classList.remove('purple-bg');
+                    cell.classList.remove('yellow-bg', 'green-bg', 'red-bg'); 
+                    if (prevBg) {
+                        cell.classList.add(prevBg); 
+                    }
+                } else {
+                    const bgClasses = ['yellow-bg', 'green-bg', 'red-bg'];
+                    let originalBg = bgClasses.find(cls => cell.classList.contains(cls)) || "";
+                    cell.setAttribute('data-prev-bg', originalBg);
+
+                    cell.classList.remove('yellow-bg', 'green-bg', 'red-bg');
+                    cell.classList.add('purple-bg');
+                }
+                return; 
+            }
+
+            cell.classList.remove('yellow-bg', 'green-bg', 'red-bg', 'purple-bg');
+            const carIcon = cell.querySelector('.car-icon');
+            if (carIcon) {
+                carIcon.remove();
+            }
+
+            switch (currentMode) {
+                case 'yellow':
+                    cell.classList.add('yellow-bg');
+                    break;
+                case 'green':
+                    cell.classList.add('green-bg');
+                    break;
+                case 'car':
+                    if (!cell.querySelector('.car-icon')) {
+                        cell.innerHTML += '<span class="car-icon">🚗</span>';
+                    }
+                    break;
+            }
+
+            cell.dataset.mode = currentMode;
+
+            document.querySelectorAll('.number-cell').forEach(c => c.classList.remove('selected'));
+
+            cell.classList.add('selected');
+        }
+
+        function findAvailableGridCell() {
+            const allGridCells = document.querySelectorAll('.grid-cell');
+            
+            let targetCell = Array.from(allGridCells).find(cell => 
+                !cell.hasChildNodes() && !cell.classList.contains('occupied-double')
+            );
+
+            if (!targetCell) {
+                targetCell = Array.from(document.querySelectorAll('.extra-cell .grid-cell'))
+                    .find(cell => !cell.hasChildNodes());
+            }
+
+            return targetCell;
+        }
+
+        function moveToGrid(sourceCell, targetCell) {
+            if (!sourceCell || !targetCell) {
+                console.error('moveToGrid: Source or target cell is null');
+                return;
+            }
+            
+            if (targetCell.hasChildNodes() || targetCell.classList.contains('red-bg')) {
+                console.warn('Target cell is already occupied or blocked');
+                return;
+            }
+
+            const isDouble = sourceCell.classList.contains('yellow-bg');
+            const isExtraCell = targetCell.closest('.extra-cell') !== null;
+            const gridContainer = targetCell.closest('.grid-container') || targetCell.closest('.extra-cell');
+
+            if (!gridContainer) {
+                console.error('moveToGrid: No grid or extra cell container found');
+                return;
+            }
+
+            const allGridCells = Array.from(gridContainer.querySelectorAll('.grid-cell'));
+            const targetIndex = allGridCells.indexOf(targetCell);
+            
+            if (!isExtraCell && isDouble && (targetIndex % 3 === 2 || allGridCells[targetIndex + 1]?.hasChildNodes())) {
+                alert("雙格數字需要 2 個相鄰的空格！");
+                return;
+            }
+
+            const newCell = sourceCell.cloneNode(true);
+            newCell.dataset.originalRace = sourceCell.dataset.race;
+            newCell.dataset.originalNumber = sourceCell.dataset.number;
+            newCell.onclick = () => returnToTable(newCell.parentElement);
+
+            if (sourceCell.classList.contains('yellow-bg')) newCell.classList.add('yellow-bg');
+            if (sourceCell.classList.contains('green-bg')) newCell.classList.add('green-bg');
+            if (sourceCell.querySelector('.car-icon')) {
+                newCell.innerHTML += '<span class="car-icon">🚗</span>';
+            }
+
+            newCell.innerHTML = `
+                ${sourceCell.dataset.number}
+                <div style="font-size: 12px; color: gray;">第${parseInt(sourceCell.dataset.race) + 1}場</div>
+            `;
+
+            targetCell.appendChild(newCell);
+            sourceCell.style.visibility = 'hidden';
+
+            if (!isExtraCell && isDouble) {
+                const nextCell = allGridCells[targetIndex + 1];
+                if (nextCell) {
+                    nextCell.classList.add('occupied-double');
+                }
+            }
+
+            updateRaceInfo(targetCell);
+        }
+
+        function handleGridClick(cell) {
+            if (cell.classList.contains('red-bg')) {
+                return;
+            }
+
+            const selectedCell = document.querySelector('.number-cell.selected');
+            if (selectedCell) {
+                moveToGrid(selectedCell, cell);
+                selectedCell.classList.remove('selected');
+            }
+        }
+
+        function deleteGrid(gridId) {
+            const grid = document.getElementById(gridId);
+            if (grid) {
+                returnAllToTable(grid);
+                grid.remove();
+            }
+        }
+
+        function deleteExtraCell(cellId) {
+            const cell = document.getElementById(cellId);
+            if (cell) {
+                returnAllToTable(cell);
+                cell.remove();
+            }
+        }
+
+        function returnAllToTable(container) {
+            const gridCells = container.querySelectorAll('.grid-cell');
+            gridCells.forEach(cell => {
+                if (cell.hasChildNodes()) {
+                    returnToTable(cell);
+                }
+            });
+        }
+
+        function setYellow() {
+            currentMode = 'yellow';
+        }
+
+        function setGreen() {
+            currentMode = 'green';
+        }
+
+        function addCar() {
+            currentMode = 'car';
+        }
+
+        function setRed() {
+            currentMode = 'red';
+        }
+
+        function setUrineTest() {
+            urineTestActive = !urineTestActive;
+            currentMode = urineTestActive ? 'urine' : '';
+
+            const button = document.querySelector('button[onclick="setUrineTest()"]');
+            button.style.backgroundColor = urineTestActive ? 'purple' : '';
+            button.style.color = urineTestActive ? 'white' : '';
+            button.textContent = urineTestActive ? '驗尿模式：開啟' : '驗尿模式：關閉';
+
+            // 更新所有格子的點擊行為
+            document.querySelectorAll('.number-cell').forEach(cell => {
+                // 重新綁定點擊事件
+                cell.onclick = () => {
+                    if (urineTestActive) {
+                        handleCellClick(cell);
+                    } else {
+                        const targetGrid = findAvailableGridCell();
+                        if (targetGrid) {
+                            moveToGrid(cell, targetGrid);
+                        }
+                    }
+                };
+            });
+        }
+
+        function updateRaceInfo(targetCell) {
+            if (!targetCell) {
+                console.error('updateRaceInfo: Target cell is null');
+                return;
+            }
+
+            const gridContainer = targetCell.closest('.grid-container');
+            if (!gridContainer) {
+                console.error('updateRaceInfo: No grid container found');
+                return;
+            }
+
+            const raceInfoDiv = gridContainer.querySelector('.race-info');
+            const summaryDiv = gridContainer.querySelector('.grid-summary');
+
+            if (!raceInfoDiv || !summaryDiv) {
+                console.error('Race info or summary divs not found');
+                return;
+            }
+
+            let raceMap = new Map();
+            let eastCount = 0;
+            let westCount = 0;
+            let totalCount = 0;
+
+            gridContainer.querySelectorAll('.grid-cell .number-cell').forEach(cell => {
+                let race = parseInt(cell.dataset.originalRace);
+                let number = parseInt(cell.dataset.originalNumber);
+
+                if (cell.classList.contains('green-bg')) {
+                    westCount++;
+                } else {
+                    eastCount++;
+                }
+                totalCount++;
+
+                if (!raceMap.has(race)) {
+                    raceMap.set(race, []);
+                }
+                raceMap.get(race).push(number);
+            });
+
+            let sortedRaceEntries = Array.from(raceMap.entries()).sort((a, b) => a[0] - b[0]);
+            sortedRaceEntries.forEach(entry => entry[1].sort((a, b) => a - b));
+
+            let displayText = sortedRaceEntries.length > 0
+                ? sortedRaceEntries.map(entry => `${entry[0] + 1}場: ${entry[1].map(num => `${num}號`).join(', ')}`).join(' | ')
+                : '場次：無';
+
+            raceInfoDiv.textContent = displayText;
+            summaryDiv.textContent = `東岸總數：${eastCount} | 西岸總數：${westCount} | 總數：${totalCount}`;
+
+            latestRaceInfo = displayText;
+        }
+
+        function returnToTable(gridCell) {
+            if (gridCell.hasChildNodes()) {
+                const numberCell = gridCell.querySelector('.number-cell');
+                const originalRace = numberCell.dataset.originalRace;
+                const originalNumber = numberCell.dataset.originalNumber;
+                const isDouble = numberCell.classList.contains('yellow-bg');
+
+                if (!originalRace || !originalNumber) {
+                    console.error('原始數據遺失');
+                    return;
+                }
+
+                const originalCell = document.querySelector(
+                    `#confirmationSettings .number-cell[data-race="${originalRace}"][data-number="${originalNumber}"]`
+                );
+
+                if (originalCell) {
+                    originalCell.style.visibility = 'visible';
+                } else {
+                    console.error('找不到原始數字');
+                }
+
+                gridCell.innerHTML = '';
+
+                if (isDouble) {
+                    const gridContainer = gridCell.closest('.grid-container');
+                    const allGridCells = Array.from(gridContainer.querySelectorAll('.grid-cell'));
+                    const targetIndex = allGridCells.indexOf(gridCell);
+                    if (targetIndex % 3 !== 2) {
+                        allGridCells[targetIndex + 1].classList.remove('occupied-double');
+                    }
+                }
+
+                updateRaceInfo(gridCell);
+            }
+        }
+
+        function playRaceInfo() {
+            if (latestRaceInfo && isVoiceEnabled) {
+                let textToSpeak = latestRaceInfo.replace(/\|/g, '，') + 
+                    (voiceMode ? `，${voiceMode}` : '');
+
+                speechSynthesisUtterance = new SpeechSynthesisUtterance(textToSpeak);
+                speechSynthesisUtterance.lang = 'zh-HK'; 
+                speechSynthesisUtterance.rate = speechRate;  
+                speechSynthesisUtterance.pitch = 1; 
+
+                window.speechSynthesis.cancel(); // 確保之前的語音被停止
+                window.speechSynthesis.speak(speechSynthesisUtterance);
+            } else {
+                alert("沒有可朗讀的內容！");
+            }
+        }
+
+        function stopRaceInfo() {
+            if (speechSynthesisUtterance) {
+                window.speechSynthesis.cancel(); // 停止目前播放的語音
+            }
+        }
+
+        function addGrid9() {
+            const container = document.getElementById('gridsContainer');
+            const gridId = `grid-${gridCounter++}`;
+
+            const gridHtml = `
+                <div class="grid-container" id="${gridId}">
+                    <div class="grid-controls">
+                        <button class="delete-btn" onclick="deleteGrid('${gridId}')">🗑️ 刪除九宮格</button>
+                        <button class="voice-mode-button" data-mode="請打腳包" onclick="setVoiceMode('請打腳包')">請打腳包</button>
+                        <button class="voice-mode-button" data-mode="請上車" onclick="setVoiceMode('請上車')">請上車</button>
+                        <button id="voicePlayButton-${gridId}" onclick="playRaceInfo()">▶️</button>
+                        <button id="voiceStopButton-${gridId}" onclick="stopRaceInfo()">⏹️</button>
+                        <button class="noting-btn" onclick="toggleNotingMode()">noting</button>
+                    </div>
+                    <div class="grid-9">
+                        ${Array(9).fill('').map(() => `<div class="grid-cell" onclick="applyNoting(this)"></div>`).join('')}
+                    </div>
+                    <div class="race-info" id="race-info-${gridId}" style="margin-top: 5px; font-size: 14px; color: gray;">
+                        場次：無
+                    </div>
+                    <div class="grid-summary" id="grid-summary-${gridId}" style="margin-top: 5px; font-size: 14px; font-weight: bold;">
+                        東岸總數：0 | 西岸總數：0 | 總數：0
+                    </div>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', gridHtml);
+
+            // Automatically set the default voice mode when adding a new grid
+            setVoiceMode('請打腳包');
+        }
+
+        function addExtraCell() {
+            const container = document.getElementById('extraCellsContainer');
+            const cellId = `cell-${cellCounter++}`;
+            const cellHtml = `
+                <div class="extra-cell" id="${cellId}">
+                    <div class="grid-cell" onclick="applyNoting(this)"></div>
+                    <button class="delete-btn" onclick="deleteExtraCell('${cellId}')">🗑️ 刪除格子</button>
+                    <div class="race-info" style="margin-top: 5px; font-size: 14px; color: gray;">
+                        場次：無
+                    </div>
+                    <div class="grid-summary" style="margin-top: 5px; font-size: 14px; font-weight: bold;">
+                        東岸總數：0 | 西岸總數：0 | 總數：0
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', cellHtml);
+        }
+
+        function updateSpeechRate(value) {
+            speechRate = parseFloat(value);
+            document.getElementById('rateValue').textContent = value + 'x';
+        }
+
+        function goToPage4() {
+            goToPage(4);
+
+            const page3Content = document.getElementById('raceSettings').cloneNode(true);
+            const container = document.getElementById('confirmationSettings');
+            container.innerHTML = '';
+            container.appendChild(page3Content);
+
+            const cells = container.querySelectorAll('.number-cell');
+            cells.forEach(cell => {
+                cell.onclick = () => {
+                    const targetGrid = findAvailableGridCell();
+                    if (targetGrid) {
+                        moveToGrid(cell, targetGrid);
+                    }
+                };
+
+                // 保留原來的背景顏色（確保驗尿模式標記也複製過來）
+                if (cell.classList.contains('purple-bg')) {
+                    cell.classList.add('purple-bg');
+                } else if (cell.dataset.mode) {
+                    switch (cell.dataset.mode) {
+                        case 'yellow':
+                            cell.classList.add('yellow-bg');
+                            break;
+                        case 'green':
+                            cell.classList.add('green-bg');
+                            break;
+                        case 'car':
+                            if (!cell.querySelector('.car-icon')) {
+                                cell.innerHTML += '<span class="car-icon">🚗</span>';
+                            }
+                            break;
+                    }
+                }
+            });
+        }
+
+        function toggleNotingMode() {
+            notingMode = !notingMode;
+
+            // 改變按鈕的背景顏色，表示模式開啟/關閉
+            document.querySelectorAll('.noting-btn').forEach(btn => {
+                btn.style.backgroundColor = notingMode ? 'darkred' : 'red';
+                btn.style.color = 'white';
+            });
+        }
+
+        function applyNoting(cell) {
+            if (!notingMode) return;  // 只有在 noting 模式開啟時才允許操作
+
+            if (cell.textContent === "noting") {
+                cell.textContent = "";  // 再次點擊清除 noting
+                cell.classList.remove("red-bg");  // 也移除紅色背景
+            } else if (!cell.textContent.trim()) { // 只有空白格子才能設置 noting
+                cell.textContent = "noting";
+                cell.classList.add("red-bg"); // 紅色背景標記 noting
+            }
+        }
+
+        function setVoiceMode(mode) {
+            voiceMode = mode;
+
+            // 先移除所有語音模式按鈕的選中狀態
+            document.querySelectorAll('.voice-mode-button').forEach(btn => btn.classList.remove('selected-button'));
+
+            // 遍歷所有語音模式按鈕，並設定目前選中的模式
+            document.querySelectorAll(`button[data-mode="${mode}"]`).forEach(btn => btn.classList.add('selected-button'));
+        }
+
+        // Add this to initialize the default voice mode when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            setVoiceMode('請打腳包');
+        });
+    </script>
 </body>
 </html>
